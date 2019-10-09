@@ -1,13 +1,8 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: devops
----
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: java-heap-collector
-  namespace: devops
+  namespace: <needed namespace>
   labels:
     k8s-app: java-heap-collector
 spec:
