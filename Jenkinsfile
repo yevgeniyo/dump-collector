@@ -1,0 +1,62 @@
+@org.jenkinsci.plugins.workflow.libs.Library('jenkins.pipeline')
+
+def containerLabel
+def yamlContent
+def imageUniqueTag
+
+def final jenkinsPipelineLib = library("jenkins.pipeline@master").com.nextinsurance.pipeline
+def final utility = jenkinsPipelineLib.Utility.new(this, this.steps)
+
+
+node("master") {
+    containerLabel = "jenkins-slave-${UUID.randomUUID().toString()}"
+    echo "Slave random name is: ${containerLabel}"
+    jenkinsPipelinelib =
+            utility.setEnvironment()
+    def yamlFileName = "slave.yaml"
+    //TODO: Change to master
+    utility.getFileFromGit("devops", "moshe_k8s_heap_dump", "jenkins/jenkins_files/generic/build-heap-dump-collector-docker-image/${yamlFileName}", "slave.yaml")
+    yamlContent = readFile(file: "slave.yaml")
+}
+
+pipeline {
+
+    agent {
+        kubernetes {
+            label "${containerLabel}"
+            yaml yamlContent
+        }
+    }
+
+    options {
+        timeout(time: 10, unit: 'MINUTES')
+        timestamps()
+    }
+
+    stages {
+        stage("git clone") {
+            steps {
+                script {
+                    def shortCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+                    imageUniqueTag = "${shortCommit}-${env.BUILD_NUMBER}"
+                }
+            }
+        }
+
+        stage("build image") {
+            steps {
+                script {
+                    container('docker') {
+                        dir("jenkins/docker_files/apigateway-agent") {
+
+                            sh """
+                            docker ps -a
+                            """
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+}
