@@ -14,8 +14,7 @@ node("master") {
     jenkinsPipelinelib =
             utility.setEnvironment()
     def yamlFileName = "slave.yaml"
-    //TODO: Change to master
-    utility.getFileFromGit("devops", "moshe_k8s_heap_dump", "jenkins/jenkins_files/generic/build-heap-dump-collector-docker-image/${yamlFileName}", "slave.yaml")
+    utility.getFileFromGit("dumo-collector", "master", "${yamlFileName}", "slave.yaml")
     yamlContent = readFile(file: "slave.yaml")
 }
 
