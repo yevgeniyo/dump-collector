@@ -14,7 +14,7 @@ node("master") {
     jenkinsPipelinelib =
             utility.setEnvironment()
     def yamlFileName = "slave.yaml"
-    utility.getFileFromGit("dumo-collector", "master", "${yamlFileName}", "slave.yaml")
+    utility.getFileFromGit("dump-collector", "master", "${yamlFileName}", "slave.yaml")
     yamlContent = readFile(file: "slave.yaml")
 }
 
