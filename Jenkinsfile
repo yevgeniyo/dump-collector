@@ -3,6 +3,9 @@ def containerLabel
 def yamlContent
 def imageUniqueTag
 
+def dockerRepoName = "dump-collector"
+def dockerRegistry = "648158488652.dkr.ecr.us-west-2.amazonaws.com"
+
 node("master") {
     containerLabel = "jenkins-slave-${UUID.randomUUID().toString()}"
     echo "Slave random name is: ${containerLabel}"
@@ -41,7 +44,15 @@ pipeline {
                         dir("jenkins/docker_files/apigateway-agent") {
 
                             sh """
-                            docker ps -a
+                            docker build --no-cache -t ${dockerRepoName}:latest .
+                            eval \$(aws ecr get-login --no-include-email --region us-west-2)
+                            docker tag ${dockerRepoName}:latest ${dockerRegistry}/${dockerRepoName}:stable
+                            docker push ${dockerRegistry}/${dockerRepoName}:stable
+                            docker tag ${dockerRegistry}/${dockerRepoName}:stable \
+                              ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
+                            docker push ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
+                            docker rmi ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag} \
+                              ${dockerRegistry}/${dockerRepoName}:stable -f
                             """
                         }
 
