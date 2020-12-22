@@ -11,13 +11,13 @@ def final utility = jenkinsPipelineLib.Utility.new(this, this.steps)
 node("master") {
     containerLabel = "jenkins-slave-${UUID.randomUUID().toString()}"
     echo "Slave random name is: ${containerLabel}"
-    jenkinsPipelinelib =
-            utility.setEnvironment()
+//     jenkinsPipelinelib =
+//             utility.setEnvironment()
 //     def yamlFileName = "slave.yaml"
 //     utility.getFileFromGit("dump-collector", "master", "${yamlFileName}", "slave.yaml")
 //     yamlContent = readFile(file: "slave.yaml")
-    yamlContent = readYaml file: "slave.yaml"
-    echo yamlContent
+//     yamlContent = readYaml file: "slave.yaml"
+//     echo yamlContent
 }
 
 pipeline {
@@ -25,7 +25,7 @@ pipeline {
     agent {
         kubernetes {
             label "${containerLabel}"
-            yaml yamlContent
+            yaml readYaml file: "slave.yaml"
         }
     }
 
