@@ -16,7 +16,7 @@ node("master") {
 //     def yamlFileName = "slave.yaml"
 //     utility.getFileFromGit("dump-collector", "master", "${yamlFileName}", "slave.yaml")
 //     yamlContent = readFile(file: "slave.yaml")
-    yamlContent = readYaml file: "slave.yaml"
+    yamlContent = readFile file: "slave.yaml"
     echo "${yamlContent}"
 }
 
