@@ -41,20 +41,17 @@ pipeline {
             steps {
                 script {
                     container('docker') {
-                        dir("jenkins/docker_files/apigateway-agent") {
-
-                            sh """
-                            docker build --no-cache -t ${dockerRepoName}:latest .
-                            eval \$(aws ecr get-login --no-include-email --region us-west-2)
-                            docker tag ${dockerRepoName}:latest ${dockerRegistry}/${dockerRepoName}:stable
-                            docker push ${dockerRegistry}/${dockerRepoName}:stable
-                            docker tag ${dockerRegistry}/${dockerRepoName}:stable \
-                              ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
-                            docker push ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
-                            docker rmi ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag} \
-                              ${dockerRegistry}/${dockerRepoName}:stable -f
-                            """
-                        }
+                        sh """
+                        docker build --no-cache -t ${dockerRepoName}:latest .
+                        eval \$(aws ecr get-login --no-include-email --region us-west-2)
+                        docker tag ${dockerRepoName}:latest ${dockerRegistry}/${dockerRepoName}:stable
+                        docker push ${dockerRegistry}/${dockerRepoName}:stable
+                        docker tag ${dockerRegistry}/${dockerRepoName}:stable \
+                          ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
+                        docker push ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
+                        docker rmi ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag} \
+                          ${dockerRegistry}/${dockerRepoName}:stable -f
+                        """
 
                     }
                 }
