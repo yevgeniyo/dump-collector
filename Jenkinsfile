@@ -57,10 +57,10 @@ pipeline {
                 }
             }
         }
-        post {
-            always {
-                cleanWs deleteDirs: true, notFailBuild: true
-            }
+    }
+    post {
+        always {
+            cleanWs deleteDirs: true, notFailBuild: true
         }
     }
 }
