@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
     - name: docker
-      image: docker:20.10.1
+      image: 648158488652.dkr.ecr.us-west-2.amazonaws.com/base_images:maven-base
       imagePullPolicy: Always
       command: ['cat']
       resources:
