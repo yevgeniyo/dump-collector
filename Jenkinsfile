@@ -9,7 +9,7 @@ def dockerRegistry = "648158488652.dkr.ecr.us-west-2.amazonaws.com"
 node("master") {
     containerLabel = "jenkins-slave-${UUID.randomUUID().toString()}"
     echo "Slave random name is: ${containerLabel}"
-    yamlContent = readFile file: "slave.yaml"
+    yamlContent = readFile file: "${env.WORKSPACE}/slave.yaml"
     echo "Slave YAML is:\n${yamlContent}"
 }
 
