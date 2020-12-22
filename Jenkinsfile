@@ -60,6 +60,7 @@ pipeline {
     }
     post {
         always {
+            deleteDir()
             cleanWs deleteDirs: true, notFailBuild: true
         }
     }
