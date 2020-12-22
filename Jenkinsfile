@@ -13,9 +13,10 @@ node("master") {
     echo "Slave random name is: ${containerLabel}"
     jenkinsPipelinelib =
             utility.setEnvironment()
-    def yamlFileName = "slave.yaml"
-    utility.getFileFromGit("dump-collector", "master", "${yamlFileName}", "slave.yaml")
-    yamlContent = readFile(file: "slave.yaml")
+//     def yamlFileName = "slave.yaml"
+//     utility.getFileFromGit("dump-collector", "master", "${yamlFileName}", "slave.yaml")
+//     yamlContent = readFile(file: "slave.yaml")
+    yamlContent = readYaml file: "slave.yaml"
 }
 
 pipeline {
