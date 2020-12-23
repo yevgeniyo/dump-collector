@@ -9,7 +9,7 @@ while true; do
     if [ "$dumps_size" -ge 10000000 ]; then
         echo "Dumps size more than 10G, cleaning /dumps"
         rm -rf /dumps/*
-    else echo "/dumps size is $dumps_size bytes and less than 50000000 (50G), nothing to do"
+    else echo "/dumps size is $dumps_size bytes and less than 10000000 (10G), nothing to do"
     fi
 
     sleep 60s
