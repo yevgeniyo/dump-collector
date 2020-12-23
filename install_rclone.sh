@@ -113,12 +113,13 @@ case $OS_type in
     ;;
 esac
 
+RCLONE_VERSION=v1.50.1
 
 #download and unzip
 if [ -z "${install_beta}" ]; then
 #    download_link="https://downloads.rclone.org/rclone-current-$OS-$OS_type.zip"
-    download_link="https://downloads.rclone.org/v1.50.1/rclone-v1.50.1-$OS-$OS_type.zip"
-    rclone_zip="rclone-current-$OS-$OS_type.zip"
+    download_link="https://downloads.rclone.org/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-$OS-$OS_type.zip"
+    rclone_zip="rclone-${RCLONE_VERSION}-$OS-$OS_type.zip"
 else
     download_link="https://beta.rclone.org/rclone-beta-latest-$OS-$OS_type.zip"
     rclone_zip="rclone-beta-latest-$OS-$OS_type.zip"
