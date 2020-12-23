@@ -2,7 +2,7 @@
 
 while true; do
     echo "syncing /dumps to $S3bucket"
-    .rclone.conf copy /dumps remote:$S3bucket
+    rclone copy /dumps remote:$S3bucket
 
     echo "Checking /dumps size on the host"
     dumps_size=`du -s /dumps | awk '{print $1}'`

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: java-heap-collector
-  namespace: <needed namespace>
+  namespace: moshe-test
   labels:
     k8s-app: java-heap-collector
 spec:
@@ -19,10 +19,10 @@ spec:
         operator: Exists
       containers:
       - name: java-heap-collector
-        image: <your registry>
+        image: 648158488652.dkr.ecr.us-west-2.amazonaws.com/dump-collector:stable
         env:
         - name: S3bucket
-          value: <bucket name>
+          value: next-heapdumps
         resources:
           limits:
             memory: 200Mi
