@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 while true; do
-    arclone move /dumps remote:$S3bucket
+    rclone move /dumps remote:$S3bucket
     RESULT=$?
     if [ $RESULT -ne 0 ]; then
         echo "Failed to send dump files to S3 bucket ${S3bucket}"
