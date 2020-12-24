@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 while true; do
-    echo "syncing /dumps to $S3bucket"
-    #TODO delete old files, add timestamps
-    rclone move /dumps remote:$S3bucket
+    arclone move /dumps remote:$S3bucket
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+        echo "Failed to send dump files to S3 bucket ${S3bucket}"
+    fi
 
 #    echo "Checking /dumps size on the host"
 #    dumps_size=`du -s /dumps | awk '{print $1}'`
