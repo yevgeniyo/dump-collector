@@ -19,7 +19,7 @@ spec:
         operator: Exists
       containers:
       - name: java-heap-collector
-        image: 648158488652.dkr.ecr.us-west-2.amazonaws.com/dump-collector:25ab912-33
+        image: 648158488652.dkr.ecr.us-west-2.amazonaws.com/dump-collector:5dd958a-35
         env:
         - name: S3bucket
           value: next-heapdumps
