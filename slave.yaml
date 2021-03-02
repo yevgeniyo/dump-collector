@@ -29,4 +29,3 @@ spec:
     - name: nvme
       hostPath:
         path: /local
-
