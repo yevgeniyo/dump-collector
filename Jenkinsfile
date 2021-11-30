@@ -4,7 +4,7 @@ def yamlContent
 def imageUniqueTag
 
 def dockerRepoName = "dump-collector"
-def dockerRegistry = "648158488652.dkr.ecr.us-west-2.amazonaws.com"
+def dockerRegistry = "641202632344.dkr.ecr.us-west-2.amazonaws.com"
 
 node("master") {
     containerLabel = "jenkins-slave-${UUID.randomUUID().toString()}"
