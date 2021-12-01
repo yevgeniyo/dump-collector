@@ -43,7 +43,7 @@ pipeline {
                     container('docker') {
                         sh """
                         docker build --no-cache -t ${dockerRepoName}:latest .
-                        eval \$(aws ecr get-login --no-include-email --region us-west-2)
+                        eval \$(aws ecr get-login --no-include-email --region us-west-2 --registry-ids 641202632344)
                         docker tag ${dockerRepoName}:latest ${dockerRegistry}/${dockerRepoName}:stable
                         docker push ${dockerRegistry}/${dockerRepoName}:stable
                         docker tag ${dockerRegistry}/${dockerRepoName}:stable \
