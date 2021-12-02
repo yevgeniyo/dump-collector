@@ -10,7 +10,7 @@ while true; do
             if [ $RESULT -ne 0 ]; then
                 echo "Failed to send dump dir $FILE to S3 bucket $S3bucket"
             fi
-        else
+        elif [ -f $FILE ]; then
             # file: move to a directory named with the file timestamp
             TIMESTAMP=$(date -r $FILE +"%Y_%m_%d_%H_%M_%S")
             rclone move $FILE remote:$S3bucket/$TIMESTAMP
