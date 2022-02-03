@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk update && apk add --no-cache bash mysql-client python3 py3-pip && \
+RUN apk update && apk add --no-cache bash python3 py3-pip && \
      pip3 install --upgrade pip && \
      pip3 install awscli==1.22.46 && \
      ln -s /usr/bin/python3 /usr/bin/python &&\
