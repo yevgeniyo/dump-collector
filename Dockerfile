@@ -1,15 +1,14 @@
-FROM ubuntu:latest
+FROM alpine:latest
 
-# Installing needed soft
-RUN apt-get update -y && \
-    apt-get -y install curl unzip vim
+RUN apk update && apk add --no-cache bash python3 py3-pip && \
+     pip3 install --upgrade pip && \
+     pip3 install awscli==1.22.46 && \
+     ln -s /usr/bin/python3 /usr/bin/python &&\
+     rm -rf /var/cache/apk/*
 
-# Adding scripts and rsync conf
-COPY rclone.conf /root/.config/rclone/
 COPY *.sh /
 
 RUN chmod +x /*.sh
 
-RUN /install_rclone.sh
 
 CMD ["sh", "-c", "/run.sh"]
