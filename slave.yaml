@@ -4,9 +4,10 @@ metadata:
   labels:
     spotinst.io/restrict-scale-down: true
 spec:
+  serviceAccount: jenkins-nonadmin-agent-sa
   containers:
     - name: docker
-      image: 648158488652.dkr.ecr.us-west-2.amazonaws.com/base_images:maven-base
+      image: 641202632344.dkr.ecr.us-west-2.amazonaws.com/base_images:maven-base
       imagePullPolicy: Always
       command: ['cat']
       resources:

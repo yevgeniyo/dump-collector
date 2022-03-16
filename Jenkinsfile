@@ -17,6 +17,7 @@ pipeline {
 
     agent {
         kubernetes {
+            cloud 'kubernetes-shared-services'
             label "${containerLabel}"
             yaml yamlContent
         }
