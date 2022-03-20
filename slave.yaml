@@ -5,6 +5,13 @@ metadata:
     spotinst.io/restrict-scale-down: true
 spec:
   serviceAccount: jenkins-nonadmin-agent-sa
+  tolerations:
+    - key: "isJenkinsSlave"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+  nodeSelector:
+    isJenkinsSlave: "true"
   containers:
     - name: docker
       image: 641202632344.dkr.ecr.us-west-2.amazonaws.com/base_images:maven-base
