@@ -1,25 +1,69 @@
+@Library('jenkins.pipeline') _
+
+env.LOG_LEVEL = "INFO"
+
+def final AWS_SHARED_SERVICES_ACCOUNT_ID = "641202632344"
+def final REGION = "us-west-2"
 
 def containerLabel
 def yamlContent
 def imageUniqueTag
 
 def dockerRepoName = "dump-collector"
-def dockerRegistry = "641202632344.dkr.ecr.us-west-2.amazonaws.com"
+def dockerRegistry = "${AWS_SHARED_SERVICES_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
 node("master") {
-    containerLabel = "jenkins-slave-${UUID.randomUUID().toString()}"
-    echo "Slave random name is: ${containerLabel}"
-    yamlContent = readFile file: "${env.WORKSPACE}@script/slave.yaml"
-    echo "Slave YAML is:\n${yamlContent}"
+    containerLabel = "jenkins-dumper-build-agent"
+    logger.debug("Agent random name is: ${containerLabel}")
 }
 
 pipeline {
 
     agent {
         kubernetes {
-            cloud 'kubernetes-shared-services'
-            label "${containerLabel}"
-            yaml yamlContent
+            inheritFrom "${containerLabel}"
+            yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    karpenter.sh/do-not-evict: "true"
+spec:
+  serviceAccount: jenkins-nonadmin-agent-sa
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+  tolerations:
+  - key: "isJenkinsSlave"
+    operator: "Equal"
+    value: "true"
+    effect: "NoSchedule"
+  nodeSelector:
+    isJenkinsSlave: "true"
+  containers:
+  - name: jnlp
+    image: 641202632344.dkr.ecr.us-west-2.amazonaws.com/jnlp:577ff3d8-130
+    imagePullPolicy: Always
+    resources:
+        limits:
+          memory: "2Gi"
+          cpu: "1"
+        requests:
+          memory: "2Gi"
+          cpu: "1"
+    tty: true
+    env:
+    - name: ENVIRONMENT
+      value: dev
+    volumeMounts:
+      - name: dockersock
+        mountPath: "/var/run/docker.sock"
+  volumes:
+    - name: dockersock
+      hostPath:
+       path: /var/run/docker.sock
+"""
         }
     }
 
@@ -41,20 +85,12 @@ pipeline {
         stage("build image") {
             steps {
                 script {
-                    container('docker') {
-                        sh """
-                        docker build --no-cache -t ${dockerRepoName}:latest .
-                        eval \$(aws ecr get-login --no-include-email --region us-west-2 --registry-ids 641202632344)
-                        docker tag ${dockerRepoName}:latest ${dockerRegistry}/${dockerRepoName}:stable
-                        docker push ${dockerRegistry}/${dockerRepoName}:stable
-                        docker tag ${dockerRegistry}/${dockerRepoName}:stable \
-                          ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
+                    ecrFunctions.ecrLogin(AWS_SHARED_SERVICES_ACCOUNT_ID, REGION)
+                    sh """
+                        docker build . --no-cache -t ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
                         docker push ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
-                        docker rmi ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag} \
-                          ${dockerRegistry}/${dockerRepoName}:stable -f
-                        """
-
-                    }
+                        docker rmi ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
+                    """
                 }
             }
         }
