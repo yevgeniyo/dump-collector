@@ -87,7 +87,7 @@ spec:
                 script {
                     ecrFunctions.ecrLogin(AWS_SHARED_SERVICES_ACCOUNT_ID, REGION)
                     sh """
-                        docker build . --no-cache -t ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag} \
+                        docker build . --no-cache -t ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
                         docker push ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
                         docker rmi ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
                     """
