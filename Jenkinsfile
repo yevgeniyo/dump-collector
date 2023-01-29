@@ -14,9 +14,7 @@ def dockerRegistry = "${AWS_SHARED_SERVICES_ACCOUNT_ID}.dkr.ecr.${REGION}.amazon
 
 node("master") {
     containerLabel = "jenkins-dumper-build-agent"
-    logger.debug("Slave random name is: ${containerLabel}")
-    yamlContent = readFile file: "${env.WORKSPACE}@script/slave.yaml"
-    logger.debug("Slave YAML is:\n${yamlContent}")
+    logger.debug("Agent random name is: ${containerLabel}")
 }
 
 pipeline {
