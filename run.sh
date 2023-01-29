@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 chown -R 1000:1000 /dumps/ # Setting the permission for the jenkins to store dumps
 cd /dumps || exit
 while true; do
