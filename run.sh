@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 chown -R 1000:1000 /dumps/ # Setting the permission for the jenkins to store dumps
-DATE_TODAY=$(date +"%Y_%m_%d")
+
 cd /dumps || exit
 while true; do
+    DATE_TODAY=$(date +"%Y_%m_%d")
     for FILE in *; do
         if [ -d $FILE ]; then
             # directory: move as is
