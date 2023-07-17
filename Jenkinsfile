@@ -4,6 +4,7 @@ env.LOG_LEVEL = "INFO"
 
 def final AWS_SHARED_SERVICES_ACCOUNT_ID = "641202632344"
 def final REGION = "us-west-2"
+def final DEVOPS_BRANCH = "master"
 
 def containerLabel
 def yamlContent
