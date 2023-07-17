@@ -8,6 +8,7 @@ def final REGION = "us-west-2"
 def containerLabel
 def yamlContent
 def imageUniqueTag
+def yamlContent
 
 def dockerRepoName = "dump-collector"
 def dockerRegistry = "${AWS_SHARED_SERVICES_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
@@ -15,6 +16,8 @@ def dockerRegistry = "${AWS_SHARED_SERVICES_ACCOUNT_ID}.dkr.ecr.${REGION}.amazon
 node("master") {
     containerLabel = "jenkins-dumper-build-agent"
     logger.debug("Agent random name is: ${containerLabel}")
+    getFileFromGit("devops", DEVOPS_BRANCH, "jenkins/docker_files/slave.yaml", "slave.yaml")
+    yamlContent = readFile(file: "slave.yaml")
 }
 
 pipeline {
@@ -22,48 +25,7 @@ pipeline {
     agent {
         kubernetes {
             inheritFrom "${containerLabel}"
-            yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-  annotations:
-    karpenter.sh/do-not-evict: "true"
-spec:
-  serviceAccount: jenkins-nonadmin-agent-sa
-  dnsConfig:
-    options:
-      - name: ndots
-        value: "1"
-  tolerations:
-  - key: "isJenkinsSlave"
-    operator: "Equal"
-    value: "true"
-    effect: "NoSchedule"
-  nodeSelector:
-    isJenkinsSlave: "true"
-  containers:
-  - name: jnlp
-    image: 641202632344.dkr.ecr.us-west-2.amazonaws.com/jnlp:577ff3d8-130
-    imagePullPolicy: Always
-    resources:
-        limits:
-          memory: "2Gi"
-          cpu: "1"
-        requests:
-          memory: "2Gi"
-          cpu: "1"
-    tty: true
-    env:
-    - name: ENVIRONMENT
-      value: dev
-    volumeMounts:
-      - name: dockersock
-        mountPath: "/var/run/docker.sock"
-  volumes:
-    - name: dockersock
-      hostPath:
-       path: /var/run/docker.sock
-"""
+            yaml yamlContent
         }
     }
 
@@ -78,6 +40,7 @@ spec:
                 script {
                     def shortCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
                     imageUniqueTag = "${shortCommit}-${env.BUILD_NUMBER}"
+                    dockerFunctions.runDockerDaemon()
                 }
             }
         }
@@ -89,7 +52,6 @@ spec:
                     sh """
                         docker build . --no-cache -t ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
                         docker push ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
-                        docker rmi ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
                     """
                 }
             }
