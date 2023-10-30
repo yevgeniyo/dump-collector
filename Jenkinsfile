@@ -17,7 +17,7 @@ def dockerRegistry = "${AWS_SHARED_SERVICES_ACCOUNT_ID}.dkr.ecr.${REGION}.amazon
 node("master") {
     containerLabel = "jenkins-dumper-build-agent"
     logger.debug("Agent random name is: ${containerLabel}")
-    getFileFromGit("devops", DEVOPS_BRANCH, "jenkins/docker_files/slave.yaml", "slave.yaml")
+    github.getFile("devops", DEVOPS_BRANCH, "jenkins/docker_files/slave.yaml", "slave.yaml")
     yamlContent = readFile(file: "slave.yaml")
 }
 
