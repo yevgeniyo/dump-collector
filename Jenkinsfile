@@ -2,8 +2,6 @@
 
 env.LOG_LEVEL = "INFO"
 
-def final AWS_SHARED_SERVICES_ACCOUNT_ID = "641202632344"
-def final REGION = "us-west-2"
 def final DEVOPS_BRANCH = "master"
 
 def containerLabel
@@ -12,12 +10,10 @@ def imageUniqueTag
 def yamlContent
 
 def dockerRepoName = "dump-collector"
-def dockerRegistry = "${AWS_SHARED_SERVICES_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
+def dockerRegistry = "${constants.OPS_SHARED_SERVICES_ACCOUNT}.dkr.ecr.${constants.AWS_DEFAULT_REGION}.amazonaws.com"
 
 node("master") {
-    containerLabel = "jenkins-dumper-build-agent"
-    logger.debug("Agent random name is: ${containerLabel}")
-    github.getFile("devops", DEVOPS_BRANCH, "jenkins/docker_files/slave.yaml", "slave.yaml")
+    github.getFile("devops", DEVOPS_BRANCH, "jenkins/docker_files/slave.yaml", "slave.yaml").replaceAll("#ECR#", constants.OPS_SHARED_SERVICES_ACCOUNT)
     yamlContent = readFile(file: "slave.yaml")
 }
 
@@ -25,7 +21,7 @@ pipeline {
 
     agent {
         kubernetes {
-            inheritFrom "${containerLabel}"
+            inheritFrom "jenkins-dumper-build-agent"
             yaml yamlContent
         }
     }
@@ -49,7 +45,7 @@ pipeline {
         stage("build image") {
             steps {
                 script {
-                    ecrFunctions.ecrLogin(AWS_SHARED_SERVICES_ACCOUNT_ID, REGION)
+                    ecrFunctions.ecrLogin(constants.OPS_SHARED_SERVICES_ACCOUNT, constants.AWS_DEFAULT_REGION)
                     sh """
                         docker build . --no-cache -t ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
                         docker push ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
