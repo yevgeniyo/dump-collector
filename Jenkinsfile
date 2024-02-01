@@ -5,7 +5,6 @@ env.LOG_LEVEL = "INFO"
 def final DEVOPS_BRANCH = "master"
 
 def containerLabel
-def yamlContent
 def imageUniqueTag
 def yamlContent
 
