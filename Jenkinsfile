@@ -12,8 +12,8 @@ def dockerRepoName = "dump-collector"
 def dockerRegistry = "${constants.OPS_SHARED_SERVICES_ACCOUNT}.dkr.ecr.${constants.AWS_DEFAULT_REGION}.amazonaws.com"
 
 node("master") {
-    github.getFile("devops", DEVOPS_BRANCH, "jenkins/docker_files/slave.yaml", "slave.yaml").replaceAll("#ECR#", constants.OPS_SHARED_SERVICES_ACCOUNT)
-    yamlContent = readFile(file: "slave.yaml")
+    github.getFile("devops", DEVOPS_BRANCH, "jenkins/docker_files/slave.yaml", "slave.yaml")
+    yamlContent = readFile(file: "slave.yaml").replaceAll("#ECR#", constants.OPS_SHARED_SERVICES_ACCOUNT)
 }
 
 pipeline {
