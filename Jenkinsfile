@@ -2,17 +2,11 @@
 
 env.LOG_LEVEL = "INFO"
 
-def final DEVOPS_BRANCH = "master"
-
-def containerLabel
 def imageUniqueTag
 def yamlContent
 
-def dockerRepoName = "dump-collector"
-def dockerRegistry = "${constants.OPS_SHARED_SERVICES_ACCOUNT}.dkr.ecr.${constants.AWS_DEFAULT_REGION}.amazonaws.com"
-
 node("master") {
-    github.getFile("devops", DEVOPS_BRANCH, "jenkins/docker_files/slave.yaml", "slave.yaml")
+    github.getFile("devops", "master", "jenkins/docker_files/slave.yaml", "slave.yaml")
     yamlContent = readFile(file: "slave.yaml").replaceAll("#ECR#", constants.OPS_SHARED_SERVICES_ACCOUNT)
 }
 
@@ -31,32 +25,29 @@ pipeline {
     }
 
     stages {
-        stage("git clone") {
+        stage("Init") {
             steps {
                 script {
                     def shortCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
                     imageUniqueTag = "${shortCommit}-${env.BUILD_NUMBER}"
-                    dockerFunctions.runDockerDaemon()
                 }
             }
         }
 
-        stage("build image") {
+        stage("Build and push") {
             steps {
                 script {
-                    ecrFunctions.ecrLogin(constants.OPS_SHARED_SERVICES_ACCOUNT, constants.AWS_DEFAULT_REGION)
-                    sh """
-                        docker build . --no-cache -t ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
-                        docker push ${dockerRegistry}/${dockerRepoName}:${imageUniqueTag}
-                    """
+                    dockerFunctions.buildAndPushDockerImage([], constants.OPS_SHARED_SERVICES_ACCOUNT, constants.AWS_DEFAULT_REGION, "dump-collector", ["latest", imageUniqueTag])
                 }
             }
         }
     }
+
     post {
-        always {
-            deleteDir()
-            cleanWs deleteDirs: true, notFailBuild: true
+        unsuccessful {
+            script {
+                slackNotifier.notifySlackFreeMessage("${env.JOB_NAME} failed\n${env.BUILD_URL}", "danger", "#devex_alerts")
+            }
         }
     }
 }

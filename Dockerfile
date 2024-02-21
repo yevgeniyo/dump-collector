@@ -2,7 +2,7 @@ FROM alpine:latest
 
 RUN apk update && apk add --no-cache bash python3 py3-pip shadow && \
      pip3 install --break-system-packages --upgrade pip && \
-     pip3 install --break-system-packages awscli==1.32.29 && \
+     pip3 install --break-system-packages awscli==1.32.45 && \
      ln -sf /usr/bin/python3 /usr/bin/python &&\
      rm -rf /var/cache/apk/*
 
