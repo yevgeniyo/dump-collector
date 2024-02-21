@@ -24,6 +24,23 @@ pipeline {
         timestamps()
     }
 
+    triggers {
+        cron("0 0 1 * *")
+
+        GenericTrigger([
+            genericVariables         : [
+                [key: 'ref', value: '$.ref', expressionType: 'JSONPath', defaultValue: null],
+            ],
+            genericHeaderVariables   : [[key: 'X-GitHub-Event', regexpFilter: 'push']],
+            regexpFilterText         : '$ref',
+            regexpFilterExpression   : '^refs/heads/main$',
+            causeString              : 'Triggered by webhook',
+            token                    : env.JOB_BASE_NAME,
+            printPostContent         : 'true',
+            printContributedVariables: 'true'
+        ])
+    }
+
     stages {
         stage("Init") {
             steps {
